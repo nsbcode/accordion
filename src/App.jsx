@@ -8,32 +8,49 @@ import img2 from "../src/assets/image2.png";
 const App = () => {
   const [selected, setSelected] = useState(0);
   const [mutliselected, setMultiSelected] = useState(false);
+  const [multiple, setMutiple] = useState([]);
 
-  console.log(mutliselected);
+  const handleMultiSelection = (getCurrentId) => {
+    const cpyMutiple = [...multiple];
+    const findIndexOfCurrentId = cpyMutiple.indexOf(getCurrentId);
+
+    console.log(findIndexOfCurrentId);
+    if (findIndexOfCurrentId === -1) cpyMutiple.push(getCurrentId);
+    else cpyMutiple.splice(findIndexOfCurrentId, 1);
+
+    setMutiple(cpyMutiple)
+  };
+
+  console.log(multiple)
+
+  const handleSingleSelection = (getCurrentId) => {
+    console.log(getCurrentId);
+    setSelected(selected === getCurrentId ? null : getCurrentId);
+  };
 
   return (
     <main className="container">
       <picture>
-        <source media="(min-width:650px)" srcset={img1} />
-        <source media="(max-width:425px)" srcset={img2} />
+        <source media="(min-width:650px)" srcSet={img1} />
+        <source media="(max-width:425px)" srcSet={img2} />
         <img src={img1} alt="Flowers" />
       </picture>
       <section className="faq-wrapper">
         <h1>FAQ</h1>
         {data.map((item, index) => (
-          <div>
+          <div key={item.id}>
             <div
               className="flex-box"
-              onClick={() => setSelected(selected === item.id ? null : item.id)}
+              onClick={
+                mutliselected
+                  ? () => handleMultiSelection(item.id)
+                  : () => handleSingleSelection(item.id)
+              }
             >
               <p>{item.title}</p>
               <IoIosArrowDown />
             </div>
-            {mutliselected ? (
-              <p className="content">{item.content}</p>
-            ) : (
-              selected === item.id && <p className="content">{item.content}</p>
-            )}
+            {multiple.indexOf(item.id) !== -1 ? <p className="content">{item.content}</p> : selected === item.id && <p className="content">{item.content}</p>}
           </div>
         ))}
         <button onClick={() => setMultiSelected(!mutliselected)}>
